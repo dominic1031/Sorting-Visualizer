@@ -1,23 +1,31 @@
+import { COMPARE_VAL, SWAP_VAL, COMPLETE_VAL } from '../Constants/constants';
 
-export async function* selectionSort(arr) {
-    var n = arr.length-1;
+const swap = (arr, a, b) => {
+    var temp = arr[a];
+    arr[a] = arr[b];
+    arr[b] = temp;
+}
+
+export function* selectionSort(arr) {
+    var n = arr.length;
     var i, j, min_idx;
     // One by one move boundary of unsorted subarray
-    for (i = 0; i < n-1; i++)
+    for (i = 0; i < n; i++)
     {
         // Find the minimum element in unsorted array
         min_idx = i;
         for (j = i + 1; j < n; j++) {
-            yield await highlightComparison(j, min_idx);
-            if (arr[j] < arr[min_idx]) {
+            // yield await highlight(arr, [j, min_idx], COMPARISON_COLOR); 
+            yield [COMPARE_VAL, j, min_idx];
+            if (arr[j].value < arr[min_idx].value) {
                 min_idx = j;
             }
         }
         // Swap the found minimum element with the first element
-        yield await highlightSwap(arr,min_idx, i);
-
-        highlightCompleted(i);
-        yield;
+        //yield await highlight([min_idx, i], SWAP_COLOR);
+        yield [SWAP_VAL, min_idx, i];
+        swap(arr, min_idx, i);
+        yield [COMPLETE_VAL, i];
     }
 }
  

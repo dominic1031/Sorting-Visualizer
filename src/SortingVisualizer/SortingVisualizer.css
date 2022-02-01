@@ -1,11 +1,14 @@
 .array-container {
-    position: absolute;
-    left: 100px;
+    margin: auto;
+    width: 90%;
+    border: 3px solid green;
+    padding: 10px;
 }
 
 .array-bar {
-    width: 2px;
-    background-color: rgb(189, 56, 56);
+    color: white;
+    text-shadow: 2px 2px 0px black; 
     display: inline-block;
+    vertical-align: bottom;
     margin: 0 1px;
 }

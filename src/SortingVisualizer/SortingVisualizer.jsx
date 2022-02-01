@@ -1,25 +1,40 @@
 import './SortingVisualizer.css';
 import * as sortingAlgorithms from '../SortingAlgorithms/sortingAlgorithms.js'
 import React from 'react';
+import ArrayBar from '../Components/ArrayBar.js';
+import { DEFAULT_COLOR, COMPARISON_COLOR, SWAP_COLOR, COMPLETE_COLOR, 
+    COMPARE_VAL, SWAP_VAL, COMPLETE_VAL } from '../Constants/constants';
 
 export default class SortingVisualizer extends React.Component {
     constructor(props) {
         super(props);
         
         this.state = {
-            array: [],
+            array: [],  // stores each bar in the array
+            disabled: false,  // button disabled
         }
     }
+
     componentDidMount() {  // when we load the app for the first time
         this.createRandomArray();
     }
 
-    createRandomArray = () => {  // create a random array
+    createRandomArray = (size = 20) => {  // create a random array
         const array = [];
-        for (let i = 0; i < 100; i++) {
-            array.push(randomIntFromInterval(1,100));
+        for (let i = 0; i < size; i++) {
+            var value = randomIntFromInterval(1,50);
+            array.push(new ArrayBar(value, DEFAULT_COLOR));
         }
         this.setState({array});
+    }
+
+    highlight = (indexList = [], color = COMPARISON_COLOR) => {
+        const { array } = this.state;
+        for (let index = 0; index < indexList.length; index++) {
+            const elem = indexList[index];
+            array[elem].color = color;
+        }
+        this.setState({ array });
     }
 
     mergeSort = () => {
@@ -27,37 +42,57 @@ export default class SortingVisualizer extends React.Component {
         sortingAlgorithms.mergeSort(this.state.array);
     }
 
-    selectionSort = () => {
-        testSort(this.state.array, sortingAlgorithms.selectionSort);
-        const animations = sortingAlgorithms.selectionSort(this.state.array.slice());
-        for (let i = 0; i < animations.length; i++) {
-            const {comparison, swap} = animations[i];
-            setTimeout(() => {
-                const arrayBars = document.getElementsByClassName('array-bar');
-                // Have two comparisons change color
-                arrayBars[comparison[1]].style.backgroundColor = 'blue';
-                arrayBars[comparison[0]].style.backgroundColor = 'blue';
-                setTimeout(() => {
-                    arrayBars[comparison[1]].style.backgroundColor = 'turquoise';
-                    arrayBars[comparison[0]].style.backgroundColor = 'turquoise';
-                }, (i + 1) * 10);
-            }, i * 10)
+    selectionSort = async () => {
+        if (this.state.disabled) { // if button is disabled, then don't run sort
+            return;
         }
+        this.setState({ disabled: true }); // prevent button from being pressed again
+        const sortAlgorithm = sortingAlgorithms.selectionSort;
+        testSort(this.state.array, sortAlgorithm);
+        let sortAlgo = sortAlgorithm(this.state.array);
+        for (var step of sortAlgo) { 
+            const arrayOperation = step[0]; // = COMPARE_VAL, SWAP_VAL, or COMPLETE_VAL
+            const highlightColor = [COMPARISON_COLOR, SWAP_COLOR, COMPLETE_COLOR][arrayOperation]
+            const barIndices = step.slice(1);  // = bars to highlight 
+            this.highlight(barIndices, highlightColor);
+            await delay(100);
+            switch(arrayOperation) {  // We want to unhighlight the bars we colored in if the bar is not COMPLETE
+                case COMPARE_VAL:
+                case SWAP_VAL:
+                    this.highlight(barIndices, DEFAULT_COLOR);
+                    break;
+                default:
+            }
+
+        }
+        this.setState({ disabled: false }); // enable button after sort is done
     }
+
+
 
     render() {
         const { array } = this.state;
         return (
+            <>
+            <button 
+                onClick={ () => this.createRandomArray() }
+                disabled={ this.state.disabled }> Create Random Array </button>
+            <button 
+                onClick={() => this.selectionSort() }
+                disabled={ this.state.disabled }> Selection Sort </button>
             <div className="array-container">
-                {array.map((value, index) => (
+                {array.map((bar, index) => (
                     <div className="array-bar" 
                     key={index}
-                    style={{height: `${value}px`}}>
+                    style={
+                        {height: `${bar.value*5}px`, 
+                        width:'20px',
+                        backgroundColor: bar.color}}>
+                        <b>{bar.value}</b>
                     </div>
                 ))}
-                <button onClick={() => this.createRandomArray()}> Create Random Array </button>
-                <button onClick={() => this.mergeSort()}> Merge Sort </button>
             </div>
+            </>
         );
     }
 }
@@ -85,3 +120,7 @@ function testSort(arr, sortFunc) {
     console.log("Sort algorithm is correctly implemented!");
     return true;
 }
+
+function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+  }
