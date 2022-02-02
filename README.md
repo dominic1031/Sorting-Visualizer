@@ -1,3 +1,5 @@
+![Capture](https://user-images.githubusercontent.com/70504211/152095002-62eb0093-4358-4268-80c0-299ebaa66f58.PNG)
+
 # Sorting Visualizer
 * A visualizer for various sorting algorithms built using React
 * Try it out: https://dominic1031.github.io/Sorting-Visualizer/
