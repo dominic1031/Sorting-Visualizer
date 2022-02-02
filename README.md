@@ -1,5 +1,6 @@
 # Sorting Visualizer
 * A visualizer for various sorting algorithms built using React
+* Try it out: https://dominic1031.github.io/Sorting-Visualizer/
 
 # Description
 * Generate a random array of numbers
