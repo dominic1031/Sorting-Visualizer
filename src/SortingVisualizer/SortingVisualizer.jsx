@@ -12,6 +12,7 @@ export default class SortingVisualizer extends React.Component {
         this.state = {
             array: [],  // stores each bar in the array
             disabled: false,  // button disabled
+            arraySize: 20,  // size of array
         }
     }
 
@@ -19,9 +20,9 @@ export default class SortingVisualizer extends React.Component {
         this.createRandomArray();
     }
 
-    createRandomArray = (size = 20) => {  // create a random array
+    createRandomArray = () => {  // create a random array
         const array = [];
-        for (let i = 0; i < size; i++) {
+        for (let i = 0; i < this.state.arraySize; i++) {
             var value = randomIntFromInterval(1,50);
             array.push(new ArrayBar(value, DEFAULT_COLOR));
         }
@@ -125,36 +126,46 @@ export default class SortingVisualizer extends React.Component {
 
     render() {
         const { array } = this.state;
+        const sortFuncAndName = [[this.bubbleSort, "Bubble Sort"],
+                                 [this.selectionSort, "Selection Sort"],
+                                 [this.mergeSort, "Merge Sort"],];
+
         return (
             <>
-                <button 
+                <div class="title-bar">
+                    <h1>Sorting Visualizer</h1>
+                </div>
+                <div className="buttons-container">
+                <button
+                    className="button-9"
                     onClick={ () => this.createRandomArray() }
-                    disabled={ this.state.disabled }> Create Random Array 
+                    disabled={ this.state.disabled }> Randomize Array 
                 </button>
-                <button 
-                    onClick={() => this.selectionSort() }
-                    disabled={ this.state.disabled }> Selection Sort 
-                </button>
-                <button 
-                    onClick={() => this.bubbleSort() }
-                    disabled={ this.state.disabled }> Bubble Sort 
-                </button>
-                <button 
-                    onClick={() => this.mergeSort() }
-                    disabled={ this.state.disabled }> Merge Sort 
-                </button>
+                {sortFuncAndName.map((el, i) => (
+                    <button
+                        className="button-9"
+                        onClick={() => el[0]() }
+                        disabled={ this.state.disabled }
+                        key={i}> {el[1]}
+                    </button>
+                ))}
+                </div>
                 <div className="array-container">
                     {array.map((bar, index) => (
                         <div className="array-bar" 
                         key={index}
                         style={
-                            {height: `${bar.value*5}px`, 
-                            width:'20px',
+                            {height: `${bar.value}%`, 
+                            marginTop: `${0}%`,
+                            width:`${80/this.state.arraySize}%`,
                             backgroundColor: bar.color}}>
                             <b>{bar.value}</b>
                         </div>
                     ))}
                 </div>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"/>
+                <a href="https://github.com/dominic1031/Sorting-Visualizer" 
+                class="fa fa-github fa-3x" target="_blank" rel="noopener noreferrer"></a>
             </>
         );
     }
