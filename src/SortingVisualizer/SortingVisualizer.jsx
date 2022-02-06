@@ -4,6 +4,8 @@ import React from 'react';
 import ArrayBar from '../Components/ArrayBar.js';
 import { DEFAULT_COLOR, COMPARISON_COLOR, SWAP_COLOR, COMPLETE_COLOR, 
     COMPARE_VAL, SWAP_VAL, COMPLETE_VAL } from '../Constants/constants';
+import { Slider, Typography } from '@mui/material';
+
 
 export default class SortingVisualizer extends React.Component {
     constructor(props) {
@@ -13,6 +15,7 @@ export default class SortingVisualizer extends React.Component {
             array: [],  // stores each bar in the array
             disabled: false,  // button disabled
             arraySize: 20,  // size of array
+            delayTime: 100
         }
     }
 
@@ -23,7 +26,7 @@ export default class SortingVisualizer extends React.Component {
     createRandomArray = () => {  // create a random array
         const array = [];
         for (let i = 0; i < this.state.arraySize; i++) {
-            var value = randomIntFromInterval(1,50);
+            var value = randomIntFromInterval(1,100);
             array.push(new ArrayBar(value, DEFAULT_COLOR));
         }
         this.setState({array});
@@ -53,7 +56,7 @@ export default class SortingVisualizer extends React.Component {
             const highlightColor = [COMPARISON_COLOR, SWAP_COLOR, COMPLETE_COLOR][arrayOperation]
             const barIndices = step.slice(1);  // = bars to highlight 
             this.highlight(barIndices, highlightColor);
-            await delay(100);
+            await delay(this.state.delayTime);
             switch(arrayOperation) {  // We want to unhighlight the bars we colored in if the bar is not COMPLETE
                 case COMPARE_VAL:
                 case SWAP_VAL:
@@ -81,7 +84,7 @@ export default class SortingVisualizer extends React.Component {
             const highlightColor = [COMPARISON_COLOR, SWAP_COLOR, COMPLETE_COLOR][arrayOperation]
             const barIndices = step.slice(1);  // = bars to highlight 
             this.highlight(barIndices, highlightColor);
-            await delay(100);
+            await delay(this.state.delayTime);
             switch(arrayOperation) {  // We want to unhighlight the bars we colored in if the bar is not COMPLETE
                 case COMPARE_VAL:
                 case SWAP_VAL:
@@ -109,7 +112,7 @@ export default class SortingVisualizer extends React.Component {
             const highlightColor = [COMPARISON_COLOR, SWAP_COLOR, COMPLETE_COLOR][arrayOperation]
             const barIndices = step.slice(1);  // = bars to highlight 
             this.highlight(barIndices, highlightColor);
-            await delay(100);
+            await delay(this.state.delayTime);
             switch(arrayOperation) {  // We want to unhighlight the bars we colored in if the bar is not COMPLETE
                 case COMPARE_VAL:
                 case SWAP_VAL:
@@ -126,9 +129,10 @@ export default class SortingVisualizer extends React.Component {
 
     render() {
         const { array } = this.state;
-        const sortFuncAndName = [[this.bubbleSort, "Bubble Sort"],
-                                 [this.selectionSort, "Selection Sort"],
-                                 [this.mergeSort, "Merge Sort"],];
+        const buttons = [[this.createRandomArray, "Generate Array"],
+                         [this.bubbleSort, "Bubble Sort"],
+                         [this.selectionSort, "Selection Sort"],
+                         [this.mergeSort, "Merge Sort"],];
 
         return (
             <>
@@ -136,19 +140,33 @@ export default class SortingVisualizer extends React.Component {
                     <h1>Sorting Visualizer</h1>
                 </div>
                 <div className="buttons-container">
-                <button
-                    className="button-9"
-                    onClick={ () => this.createRandomArray() }
-                    disabled={ this.state.disabled }> Randomize Array 
-                </button>
-                {sortFuncAndName.map((el, i) => (
-                    <button
-                        className="button-9"
-                        onClick={() => el[0]() }
-                        disabled={ this.state.disabled }
-                        key={i}> {el[1]}
-                    </button>
-                ))}
+                    {buttons.map((el, i) => (
+                        <button
+                            className="button-9"
+                            onClick={() => el[0]() }
+                            disabled={ this.state.disabled }
+                            key={i}> {el[1]}
+                        </button>
+                    ))}
+                </div>
+                <div className="slider-container">
+                   <Slider 
+                    defaultValue={this.state.arraySize} 
+                    aria-label="Array Size" 
+                    valueLabelDisplay="auto"
+                    min={5}
+                    max={100}
+                    step={1}
+                    onChange={ (e, val) => { if (this.state.arraySize !== val) { this.setState({arraySize: val}); this.createRandomArray();} }}
+                    disabled={ this.state.disabled }/>
+                    <Slider 
+                    defaultValue={100} 
+                    aria-label="Animation Speed" 
+                    valueLabelDisplay="auto"
+                    min={10}
+                    max={500}
+                    step={10}
+                    onChange={ (e, val) => { this.setState({delayTime: val})}}/>
                 </div>
                 <div className="array-container">
                     {array.map((bar, index) => (
@@ -158,7 +176,8 @@ export default class SortingVisualizer extends React.Component {
                             {height: `${bar.value}%`, 
                             marginTop: `${0}%`,
                             width:`${80/this.state.arraySize}%`,
-                            backgroundColor: bar.color}}>
+                            backgroundColor: bar.color,
+                            fontSize: `${15*(this.state.arraySize<=20)}`}}>
                             <b>{bar.value}</b>
                         </div>
                     ))}

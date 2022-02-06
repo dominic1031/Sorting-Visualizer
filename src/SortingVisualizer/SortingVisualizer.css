@@ -12,10 +12,11 @@
     color: white;
     text-shadow: 2px 2px 0px black; 
     display: inline-block;
-    vertical-align: top;
+    vertical-align: bottom;
     margin: 0 1px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     text-align: bottom;
+    font-size: 15px;
 }
 
 /* CSS */
@@ -76,7 +77,9 @@ body {
 }
 
 .title-bar {
-    background-color: rgb(52, 14, 83);
+    background: linear-gradient(-45deg, rgba(45,20,105,1) 0%, rgba(138,90,255,1) 50%, rgba(104,0,255,1) 100%);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
     overflow: hidden;   
 }
 h1 { 
@@ -105,4 +108,12 @@ opacity: 0.7;
 .fa-github {
 background: black;
 color: white;
+}
+
+.slider-container {
+  margin: auto;
+  width: 90%;
+  padding: 10px;
+  position: relative;
+  display: inline-block;
 }
