@@ -1,7 +1,5 @@
 import { COMPARE_VAL, SWAP_VAL, COMPLETE_VAL } from '../Constants/constants';
 
-// Credit: geeksforgeeks.com
-
 const swap = (arr, a, b) => {
     var temp = arr[a];
     arr[a] = arr[b];
